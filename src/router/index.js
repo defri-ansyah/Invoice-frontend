@@ -5,6 +5,7 @@ import Signup from '../views/Register.vue'
 import Invoice from '../views/Invoice.vue'
 import Report from '../views/Report.vue'
 import Detail from '../views/Detail.vue'
+import Create from '../views/Create.vue'
 
 Vue.use(VueRouter)
 
@@ -33,6 +34,11 @@ const routes = [
     path: '/detail',
     name: 'detail',
     component: Detail
+  },
+  {
+    path: '/create-invoice',
+    name: 'create-invoice',
+    component: Create
   }
 ]
 
