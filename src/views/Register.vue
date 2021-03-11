@@ -3,12 +3,10 @@
     <!-- <SideLogin/> -->
     <form @submit.prevent="signup" class="form-container">
       <p class="text2">
-        Start Accessing Banking Needs With All Devices and All Platforms With
-        30.000+ Users
+        Register
       </p>
       <p class="text3">
-        Transfering money is eassier than ever, you can access Zwallet wherever
-        you are. Desktop, laptop, mobile phone? we cover all of that for you!
+        Manage Invoices
       </p>
       <div class="form-input">
         <div class="login-input">
