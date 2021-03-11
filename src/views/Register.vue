@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <!-- <SideLogin/> -->
-    <form @submit="handleRegister" class="form-container">
+    <form @submit.prevent="signup" class="form-container">
       <p class="text2">
         Start Accessing Banking Needs With All Devices and All Platforms With
         30.000+ Users
@@ -58,8 +58,51 @@
 </template>
 
 <script>
+import axios from 'axios'
+import Swal from 'sweetalert2'
+
 export default {
-  name: 'Register'
+  name: 'Register',
+  data () {
+    return {
+      username: '',
+      email: '',
+      password: ''
+    }
+  },
+  methods: {
+    signup (e) {
+      const username = this.username
+      const email = this.email
+      const password = this.password
+      e.preventDefault()
+      axios
+        .post('http://localhost:8000/api/auth/signup', {
+          username,
+          email,
+          password
+        }).then((res) => {
+          console.log(res)
+          if (res.status === 200) {
+            this.username = ''
+            this.email = ''
+            this.password = ''
+            this.goLogin()
+          }
+          Swal.fire('Success Register', 'account created successfully', 'success')
+        })
+        .catch((err) => {
+          console.log(err.response)
+          Swal.fire('Oops...', err.response.data.messages, 'error')
+        })
+      this.email = ''
+      this.password = ''
+      this.name = ''
+    },
+    goLogin () {
+      this.$router.push('/')
+    }
+  }
 }
 </script>
 
