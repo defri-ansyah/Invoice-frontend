@@ -8,31 +8,11 @@
         <th>Total Invoice Amount</th>
         <th>Action</th>
       </tr>
-      <tr>
-        <td>1</td>
-        <td>29 Januari 2019</td>
-        <td>Mark</td>
-        <td>$3300.12</td>
-        <td>
-          <router-link to="/">[Edit]</router-link>
-          <router-link to="/">[Delete]</router-link>
-        </td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>10 Januari 2019</td>
-        <td>Defri</td>
-        <td>$1154.00</td>
-        <td>
-          <router-link to="/">[Edit]</router-link>
-          <router-link to="/">[Delete]</router-link>
-        </td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>03 Februari 2019</td>
-        <td>Bambang</td>
-        <td>$114.00</td>
+      <tr v-for="(item, index) in invoices" :key="index">
+        <td>{{item.id}}</td>
+        <td>{{handleMoment(item.createdAt)}}</td>
+        <td>{{item.user.username}}</td>
+        <td>${{item.total_amount}}</td>
         <td>
           <router-link to="/">[Edit]</router-link>
           <router-link to="/">[Delete]</router-link>
@@ -43,8 +23,45 @@
 </template>
 
 <script>
+
+import axios from 'axios'
+import moment from 'moment'
+
 export default {
-  name: 'Invoice'
+  name: 'Invoice',
+  data () {
+    return {
+      invoices: [],
+      user: JSON.parse(localStorage.getItem('user'))
+    }
+  },
+  methods: {
+    getInvoices () {
+      const token = this.user.token
+      axios
+        .get('http://localhost:8000/api/invoice', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }).then((res) => {
+          console.log(res)
+          if (res.status === 200) {
+            const invoices = res.data.data
+            // this.localData(invoices)
+            this.invoices = invoices
+          }
+        })
+        .catch((err) => {
+          console.log(err.response)
+        })
+    },
+    handleMoment (date) {
+      return moment(date).format('DD MMMM YYYY')
+    }
+  },
+  created () {
+    this.getInvoices()
+  }
 }
 </script>
 

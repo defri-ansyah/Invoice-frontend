@@ -5,26 +5,26 @@
     <div class="head">
       <div class="head">
         <p>Customer Name</p>
-        <p>Will Smith</p>
+        <p>{{invoice.user.username}}</p>
       </div>
       <div class="head">
         <p>Invoice #</p>
-        <p>IV0001</p>
+        <p>{{invoice.invoice_code}}</p>
       </div>
     </div>
     <div class="head">
       <div class="head">
         <p>Customer Address</p>
-        <p>Jalan Kebayoran Lama No 1 Jakarta Barat, 12345</p>
+        <p>{{invoice.user.address}}</p>
       </div>
       <div class="head">
         <p>Invoice Date</p>
-        <p>11/02/2019</p>
+        <p>{{handleMoment(invoice.createdAt)}}</p>
       </div>
     </div>
     <div class="phone">
       <p>Customer Phone</p>
-      <p>0812 88881234</p>
+      <p>{{invoice.user.phone_number}}</p>
     </div>
     <table>
       <tr>
@@ -34,55 +34,80 @@
         <th>Unit Price</th>
         <th>Amount</th>
       </tr>
-      <tr>
-        <td>P001</td>
-        <td>Cut off machine</td>
-        <td>1</td>
-        <td>$245.50</td>
-        <td>$245.50</td>
-      </tr>
-      <tr>
-        <td>P002</td>
-        <td>Angle Grinder</td>
-        <td>1</td>
-        <td>$54.75</td>
-        <td>$54.75</td>
-      </tr>
-      <tr>
-        <td>P003</td>
-        <td>Reciprocating Sabre Saw Blades</td>
-        <td>5</td>
-        <td>$1.23</td>
-        <td>$6.15</td>
+      <tr v-for="(item, index) in invoiceDetails" :key="index">
+        <td>{{item.id}}</td>
+        <td>{{item.item.name}}</td>
+        <td>{{item.qty}}</td>
+        <td>${{item.item.price}}</td>
+        <td>${{item.amount}}</td>
       </tr>
       <tr>
         <td></td>
         <td>Sub Total</td>
         <td></td>
         <td></td>
-        <td>$306.40</td>
+        <td>${{invoice.sub_total}}</td>
       </tr>
       <tr>
         <td></td>
         <td>Tax (10%)</td>
         <td></td>
         <td></td>
-        <td>$30.64</td>
+        <td>${{invoice.sub_total * 0.1}}</td>
       </tr>
       <tr>
         <td></td>
         <td>Total</td>
         <td></td>
         <td></td>
-        <td>$336.40</td>
+        <td>${{invoice.total_amount}}</td>
       </tr>
     </table>
   </div>
 </template>
 
 <script>
+
+import axios from 'axios'
+import moment from 'moment'
+
 export default {
-  name: 'Detail'
+  name: 'Detail',
+  data () {
+    return {
+      invoice: {},
+      invoiceDetails: [],
+      user: JSON.parse(localStorage.getItem('user'))
+    }
+  },
+  methods: {
+    getInvoices () {
+      const token = this.user.token
+      axios
+        .get('http://localhost:8000/api/invoice/11', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }).then((res) => {
+          console.log(res)
+          if (res.status === 200) {
+            const invoice = res.data.data
+            // this.localData(invoices)
+            this.invoice = invoice
+            this.invoiceDetails = invoice.invoice_details
+          }
+        })
+        .catch((err) => {
+          console.log(err.response)
+        })
+    },
+    handleMoment (date) {
+      return moment(date).format('DD MMMM YYYY')
+    }
+  },
+  created () {
+    this.getInvoices()
+  }
 }
 </script>
 
