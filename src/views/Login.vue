@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <!-- <SideLogin /> -->
-    <form @submit="handleLogin" class="form-container">
+    <form @submit.prevent="login" class="form-container">
       <p class="text2">
         Start Accessing Banking Needs With All Devices and All Platforms With
         30.000+ Users
@@ -51,8 +51,54 @@
 </template>
 
 <script>
+import axios from 'axios'
+import Swal from 'sweetalert2'
+
 export default {
-  name: 'Login'
+  name: 'Login',
+  data () {
+    return {
+      email: '',
+      password: ''
+    }
+  },
+  methods: {
+    localData (userInfo) {
+      const parsed = JSON.stringify({
+        id: userInfo.data.id,
+        token: userInfo.token,
+        isLogin: true
+      })
+      localStorage.setItem('user', parsed)
+    },
+    login (e) {
+      const email = this.email
+      const password = this.password
+      e.preventDefault()
+      axios
+        .post('http://localhost:8000/api/auth/login', {
+          email,
+          password
+        }).then((res) => {
+          console.log(res)
+          if (res.status === 200) {
+            const userInfo = res.data
+            this.localData(userInfo)
+            this.email = ''
+            this.password = ''
+            this.$router.push('/invoice')
+          }
+          Swal.fire('Success Login', 'welcome back', 'success')
+        })
+        .catch((err) => {
+          console.log(err.response)
+          Swal.fire('Oops...', err.response.data.messages, 'error')
+        })
+    },
+    goSignup () {
+      this.$router.push('/register')
+    }
+  }
 }
 </script>
 

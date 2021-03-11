@@ -18,6 +18,7 @@ export default {
 
 <style scoped>
 .wrap {
+  width: 100%;
   display: flex;
   flex-direction: column;
 }
